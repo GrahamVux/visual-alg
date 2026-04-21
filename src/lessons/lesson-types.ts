@@ -1,0 +1,28 @@
+import type { RuntimeEvent } from '../engine/runtime-events';
+
+export interface LessonDefinition {
+  id: string;
+  title: string;
+  description: string;
+  fullDescription?: string;
+  expectedOutputDescription?: string;
+  algorithmType:
+  | 'search'
+  | 'scan'
+  | 'sort'
+  | 'two-pointer'
+  | 'path-finding'
+  | 'dynamic-programming'
+  | 'graph'
+  | 'tree'
+  | 'other';
+  category: 'lookup' | 'extrema' | 'aggregate' | 'transform';
+  starterCode: string;
+  initialBindings: Record<string, unknown>;
+  watchedVariables: string[];
+  pointerVariables: string[];
+  primaryStructure: 'array' | 'list' | 'dictionary';
+  explanationMap?: Partial<
+    Record<RuntimeEvent['type'], string | ((event: RuntimeEvent) => string)>
+  >;
+}
