@@ -20,6 +20,7 @@ interface LayoutOptions {
     arraySize: number;
     target: number | null;
     arrayValues: number[];
+    additionalParams: Record<string, number>;
   }) => void;
 }
 
@@ -85,5 +86,6 @@ export function createLayout(options: LayoutOptions): LayoutRefs {
   bottomGrid.append(explanation.root, inputControl.root);
 
   shell.append(header, topGrid, bottomGrid);
+  
   return { root: shell, toolbar, code, visual, lessonInfo, explanation, inputControl };
 }

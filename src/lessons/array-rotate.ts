@@ -4,6 +4,8 @@ export const rotateArrayLesson: LessonDefinition = {
   id: 'array-rotate',
   title: 'rotate array left or right by k',
   description: 'Build a rotated copy by remapping each destination index to its source index.',
+  fullDescription: 'Array rotation shifts elements left or right by k positions, with wraparound. The algorithm computes a source index for each destination: for leftward rotation, source = (i + k) % n; for rightward, source = (i - k) with wraparound. This creates a rotated copy where elements cycle through their new positions based on the shift amount.',
+  expectedOutputDescription: 'The \'rotated\' array contains the shifted version of the input. For arr=[1, 2, 3, 4, 5] rotated left by k=2, rotated becomes [3, 4, 5, 1, 2]. The modulo operation handles wraparound so elements that shift past the end appear at the beginning. Direction toggles between leftward (0) and rightward (1) rotation.',
   algorithmType: 'two-pointer',
   category: 'transform',
   starterCode: `arr = [1, 2, 3, 4, 5];

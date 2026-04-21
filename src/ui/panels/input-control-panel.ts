@@ -16,6 +16,7 @@ export interface InputControlOptions {
     arraySize: number;
     target: number | null;
     arrayValues: number[];
+    additionalParams: Record<string, number>;
   }) => void;
 }
 
@@ -71,6 +72,46 @@ export function createInputControlPanel(options: InputControlOptions): InputCont
 
   targetGroup.append(targetLabel, targetInput);
   leftSection.append(targetGroup);
+
+  // Additional configurable parameters
+  const configurableParams = ['direction', 'mode', 'k'];
+  const additionalInputs: Record<string, HTMLInputElement> = {};
+
+  configurableParams.forEach(paramName => {
+    if (options.lesson.watchedVariables.includes(paramName)) {
+      const paramGroup = document.createElement('div');
+      paramGroup.className = 'input-group';
+
+      const paramLabel = document.createElement('label');
+      let labelText = paramName.charAt(0).toUpperCase() + paramName.slice(1);
+
+      // Customize labels for better UX
+      if (paramName === 'direction') {
+        if (options.lesson.id.includes('sort')) {
+          labelText = 'Direction (1=ascending, -1=descending)';
+        } else if (options.lesson.id.includes('rotate')) {
+          labelText = 'Direction (0=left, 1=right)';
+        } else {
+          labelText = 'Direction';
+        }
+      } else if (paramName === 'mode') {
+        labelText = 'Mode (1=largest, -1=smallest)';
+      } else if (paramName === 'k') {
+        labelText = 'Rotation Amount (k)';
+      }
+
+      paramLabel.textContent = `${labelText}:`;
+
+      const paramInput = document.createElement('input');
+      paramInput.type = 'number';
+      paramInput.value = String(options.lesson.initialBindings[paramName as keyof typeof options.lesson.initialBindings] ?? '');
+
+      paramGroup.append(paramLabel, paramInput);
+      leftSection.append(paramGroup);
+
+      additionalInputs[paramName] = paramInput;
+    }
+  });
 
   // Array Values Control
   const valuesGroup = document.createElement('div');
@@ -137,10 +178,20 @@ export function createInputControlPanel(options: InputControlOptions): InputCont
       return;
     }
 
+    // Collect additional parameters
+    const additionalParams: Record<string, number> = {};
+    Object.keys(additionalInputs).forEach(paramName => {
+      const input = additionalInputs[paramName];
+      if (input && input.value) {
+        additionalParams[paramName] = parseInt(input.value, 10);
+      }
+    });
+
     options.onApply({
       arraySize: arrayValues.length,
       target: targetValue,
       arrayValues,
+      additionalParams,
     });
   });
 

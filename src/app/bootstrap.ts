@@ -8,6 +8,7 @@ import type { LessonDefinition } from '../lessons/lesson-types';
 import { createInitialState, createStateFromLesson, getPlaybackDelay, setRunnerState } from '../state/reducers';
 import { getShortcutAction, shouldIgnoreShortcutTarget } from '../ui/keyboard-shortcuts';
 import { createLayout } from '../ui/layout';
+import { createInputControlPanel } from '../ui/panels/input-control-panel';
 import { renderLessonInfoPanel } from '../ui/panels/welcome-panel';
 import { formatValidationIssues } from '../ui/validation-summary';
 import { renderArrayPanel } from '../visual/array-renderer';
@@ -59,6 +60,10 @@ export function bootstrap(container: HTMLDivElement | null): void {
       validationMessages = formatValidationIssues(validateSource(sourceCode).errors);
       runner = null;
       setEditorValueFromApp(sourceCode);
+      
+      // Recreate input control panel for the new lesson
+      updateInputControlPanel(selectedLesson);
+      
       persist();
       render();
     },
@@ -126,6 +131,7 @@ export function bootstrap(container: HTMLDivElement | null): void {
           ...selectedLesson.initialBindings,
           arr: config.arrayValues,
           ...(selectedLesson.watchedVariables.includes('target') && config.target !== null && { target: config.target }),
+          ...config.additionalParams,
         },
       };
       selectedLesson = updatedLesson;
@@ -183,18 +189,61 @@ export function bootstrap(container: HTMLDivElement | null): void {
     togglePanelFullscreen(layout.code.root, layout.code.fullscreenButton, 'Code Editor');
   });
 
-  // Update explanation when input values change (real-time expected output)
-  layout.inputControl.arrayValuesInput.addEventListener('input', () => {
-    render();
-  });
+  function attachInputControlListeners(): void {
+    // Update explanation when input values change (real-time expected output)
+    layout.inputControl.arrayValuesInput.addEventListener('input', () => {
+      render();
+    });
 
-  layout.inputControl.targetInput.addEventListener('input', () => {
-    render();
-  });
+    layout.inputControl.targetInput.addEventListener('input', () => {
+      render();
+    });
 
-  layout.inputControl.arraySizeInput.addEventListener('change', () => {
-    render();
-  });
+    layout.inputControl.arraySizeInput.addEventListener('change', () => {
+      render();
+    });
+  }
+
+  function updateInputControlPanel(lesson: LessonDefinition): void {
+    const bottomGrid = layout.root.querySelector('.bottom-grid') as HTMLElement;
+    const oldInputControlPanel = bottomGrid.querySelector('.input-control-panel');
+    
+    if (oldInputControlPanel) {
+      oldInputControlPanel.remove();
+    }
+
+    layout.inputControl = createInputControlPanel({
+      lesson,
+      onApply: (config) => {
+        stopRunLoop();
+        const updatedLesson: LessonDefinition = {
+          ...selectedLesson,
+          initialBindings: {
+            ...selectedLesson.initialBindings,
+            arr: config.arrayValues,
+            ...(selectedLesson.watchedVariables.includes('target') && config.target !== null && { target: config.target }),
+            ...config.additionalParams,
+          },
+        };
+        selectedLesson = updatedLesson;
+
+        const updatedCode = generateUpdatedCode(sourceCode, config);
+        sourceCode = updatedCode;
+        setEditorValueFromApp(updatedCode);
+
+        state = createInitialState(selectedLesson, state.speed);
+        runner = null;
+        validationMessages = formatValidationIssues(validateSource(sourceCode).errors);
+        persist();
+        render();
+      },
+    });
+
+    bottomGrid.append(layout.inputControl.root);
+    attachInputControlListeners();
+  }
+
+  attachInputControlListeners();
 
   layout.visual.fullscreenButton.addEventListener('click', () => {
     togglePanelFullscreen(layout.visual.root, layout.visual.fullscreenButton, 'Visualization');
@@ -372,12 +421,14 @@ export function bootstrap(container: HTMLDivElement | null): void {
       arraySize: number;
       target: number | null;
       arrayValues: number[];
+      additionalParams: Record<string, number>;
     },
   ): string {
     const lines = source.split(/\r?\n/);
     const updatedLines: string[] = [];
     let foundArr = false;
     let foundSearchVar = false;
+    const foundAdditionalVars: Record<string, boolean> = {};
 
     // Detect the search variable name from watchedVariables
     // Priority: target > any other singular search variable
@@ -422,6 +473,24 @@ export function bootstrap(container: HTMLDivElement | null): void {
         continue;
       }
 
+      // Replace additional parameter assignments
+      let replacedAdditional = false;
+      for (const paramName of Object.keys(config.additionalParams)) {
+        if (
+          !foundAdditionalVars[paramName] &&
+          trimmed.startsWith(paramName) &&
+          trimmed.includes('=')
+        ) {
+          updatedLines.push(`${paramName} = ${config.additionalParams[paramName]};`);
+          foundAdditionalVars[paramName] = true;
+          replacedAdditional = true;
+          break;
+        }
+      }
+      if (replacedAdditional) {
+        continue;
+      }
+
       updatedLines.push(line);
     }
 
@@ -457,7 +526,6 @@ export function bootstrap(container: HTMLDivElement | null): void {
 
   function calculateExpectedOutput(lesson: LessonDefinition): string {
     // Get current input values from the input panel
-    const arraySize = parseInt(layout.inputControl.arraySizeInput.value, 10) || 10;
     const targetValue = layout.inputControl.targetInput.value
       ? parseInt(layout.inputControl.targetInput.value, 10)
       : null;

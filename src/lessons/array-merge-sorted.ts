@@ -4,6 +4,8 @@ export const mergeSortedLesson: LessonDefinition = {
   id: 'array-merge-sorted',
   title: 'merge two sorted arrays',
   description: 'Use two pointers to merge sorted inputs into one sorted output.',
+  fullDescription: 'Merging two sorted arrays leverages a two-pointer technique to combine them into a single sorted output. The algorithm maintains one pointer at the start of each input array and repeatedly selects the smaller front element, appending it to the merged result and advancing that pointer. After one array is exhausted, remaining elements from the other are appended.',
+  expectedOutputDescription: 'The \'merged\' array contains all elements from both input arrays in sorted order. For left=[1, 4, 7, 10] and right=[2, 3, 8, 9], merged becomes [1, 2, 3, 4, 7, 8, 9, 10]. This is fundamental to merge sort\'s efficiency in achieving O(n log n) time complexity.',
   algorithmType: 'two-pointer',
   category: 'transform',
   starterCode: `left = [1, 4, 7, 10];

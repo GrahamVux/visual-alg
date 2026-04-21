@@ -4,6 +4,8 @@ export const sortAscendingLesson: LessonDefinition = {
   id: 'array-sort-ascending',
   title: 'sort array in ascending order',
   description: 'Use bubble sort passes to move larger values to the right.',
+  fullDescription: 'Sorting in ascending order uses bubble sort, which repeatedly passes through the array comparing adjacent elements. Larger values \'bubble\' rightward through swaps. Each pass places the next-largest unsorted element in its final position. Multiple passes continue until the array is sorted. While simple, bubble sort has O(n²) complexity.',
+  expectedOutputDescription: 'After completing all passes, the \'arr\' array is sorted in ascending order. For [5, 1, 4, 2, 3], the result is [1, 2, 3, 4, 5]. Each pass through the unsorted portion moves one element to its correct position. The algorithm terminates when a pass completes without swaps or all elements are placed.',
   algorithmType: 'sort',
   category: 'transform',
   starterCode: `arr = [5, 1, 4, 2, 3];

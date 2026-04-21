@@ -1,13 +1,15 @@
 import type { LessonDefinition } from './lesson-types';
 
 export const secondExtremeLesson: LessonDefinition = {
-  id: 'array-second-extreme',
-  title: 'find second largest or smallest value',
-  description:
-    'Track the best and second-best distinct values in one scan based on the selected mode.',
-  algorithmType: 'scan',
-  category: 'extrema',
-  starterCode: `arr = [5, 1, 9, 9, 3, 1];
+    id: 'array-second-extreme',
+    title: 'find second largest or smallest value',
+    description:
+        'Track the best and second-best distinct values in one scan based on the selected mode.',
+    fullDescription: 'Finding the second largest or smallest value requires tracking two distinct extremes: the best and second-best. The algorithm compares each element against both records, updating them as needed. If an element beats the best, the old best becomes second-best. If it\'s between best and second-best, only second-best updates. This single-pass approach achieves O(n) efficiency.',
+    expectedOutputDescription: 'The \'answer\' variable stores the second-largest value (when mode=1) or second-smallest (when mode=-1). For [5, 1, 9, 9, 3, 1] in largest-mode, the largest is 9 and second-largest is 5, so answer = 5. Duplicates of the largest value are ignored when determining the second distinct extreme.',
+    algorithmType: 'scan',
+    category: 'extrema',
+    starterCode: `arr = [5, 1, 9, 9, 3, 1];
 mode = 1;
 best = arr[0];
 second = -1;
@@ -40,20 +42,20 @@ while (i < arr.length) {
 }
 
 answer = second;`,
-  initialBindings: {
-    arr: [5, 1, 9, 9, 3, 1],
-    mode: 1,
-    best: 5,
-    second: -1,
-    i: 1,
-    answer: -1,
-  },
-  watchedVariables: ['mode', 'best', 'second', 'answer', 'i'],
-  pointerVariables: ['i'],
-  primaryStructure: 'array',
-  explanationMap: {
-    COMPARE: 'Each value is compared against the current best and second-best distinct values.',
-    SET_VAR: 'When a stronger candidate is found, best/second are updated accordingly.',
-    FINISH: 'After the scan, answer stores the requested second extreme value.',
-  },
+    initialBindings: {
+        arr: [5, 1, 9, 9, 3, 1],
+        mode: 1,
+        best: 5,
+        second: -1,
+        i: 1,
+        answer: -1,
+    },
+    watchedVariables: ['mode', 'best', 'second', 'answer', 'i'],
+    pointerVariables: ['i'],
+    primaryStructure: 'array',
+    explanationMap: {
+        COMPARE: 'Each value is compared against the current best and second-best distinct values.',
+        SET_VAR: 'When a stronger candidate is found, best/second are updated accordingly.',
+        FINISH: 'After the scan, answer stores the requested second extreme value.',
+    },
 };

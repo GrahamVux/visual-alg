@@ -4,6 +4,8 @@ export const reverseArrayLesson: LessonDefinition = {
   id: 'array-reverse',
   title: 'reverse array',
   description: 'Use two pointers and swap mirrored positions until they meet.',
+  fullDescription: 'Array reversal uses a two-pointer technique where one pointer starts at the beginning and another at the end. The pointers move toward each other, swapping the values at their positions. This mirrors the outermost elements inward, completely reversing the array order in-place without requiring extra memory proportional to array size.',
+  expectedOutputDescription: 'After completion, the \'arr\' array is reversed in-place. For [1, 2, 3, 4, 5], the result is [5, 4, 3, 2, 1]. The two pointers \'i\' and \'j\' start at opposite ends and meet in the middle, with each swap moving elements toward their reversed positions.',
   algorithmType: 'two-pointer',
   category: 'transform',
   starterCode: `arr = [1, 2, 3, 4, 5];

@@ -4,6 +4,8 @@ export const countOccurrencesLesson: LessonDefinition = {
   id: 'array-count-occurrences',
   title: 'count occurrences of a value',
   description: 'Count how many times the target appears while scanning once.',
+  fullDescription: 'The count occurrences algorithm tallies how many times a specific target value appears in an array. It performs a single scan, incrementing a counter each time a match is found. This is useful for frequency analysis and understanding data distribution.',
+  expectedOutputDescription: 'The \'count\' variable equals the total number of times the target appears. For example, counting 2 in [2, 5, 2, 7, 2] returns count = 3. A count of 0 means the target is not present in the array.',
   algorithmType: 'search',
   category: 'lookup',
   starterCode: `arr = [2, 5, 2, 7, 2];
